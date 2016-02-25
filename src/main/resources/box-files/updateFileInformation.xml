@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~  Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+~
+~  WSO2 Inc. licenses this file to you under the Apache License,
+~  Version 2.0 (the "License"); you may not use this file except
+~  in compliance with the License.
+~  You may obtain a copy of the License at
+~
+~   http://www.apache.org/licenses/LICENSE-2.0
+~
+~  Unless required by applicable law or agreed to in writing,
+~  software distributed under the License is distributed on an
+~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~  KIND, either express or implied.  See the License for the
+~  specific language governing permissions and limitations
+~  under the License.
+-->
+<template name="updateFileInformation" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="fileId" description="The id of the file"/>
+    <parameter name="ifMatch" description="This is in the 'etag' field of the file object"/>
+    <parameter name="name" description="The new name for the file"/>
+    <parameter name="description" description="The new description for the file"/>
+    <parameter name="parentId" description="The parent folder of this file"/>
+    <parameter name="sharedLink"
+               description="An object representing this item’s shared link and associated permissions"/>
+    <parameter name="tags" description="All tags attached to this file."/>
+    <sequence>
+        <property name="uri.var.fileId" expression="$func:fileId"/>
+        <property name="uri.var.ifMatch" expression="$func:ifMatch"/>
+        <property name="uri.var.name" expression="$func:name"/>
+        <property name="uri.var.description" expression="$func:description"/>
+        <property name="uri.var.parentId" expression="$func:parentId"/>
+        <property name="uri.var.sharedLink" expression="$func:sharedLink"/>
+        <property name="uri.var.tags" expression="$func:tags"/>
+        <filter source="boolean(get-property('uri.var.ifMatch'))" regex="true">
+            <then>
+                <header name="If-Match" expression="get-property('uri.var.ifMatch')"
+                        scope="transport"/>
+            </then>
+        </filter>
+
+        <payloadFactory media-type="json">
+            <format>
+                {}
+            </format>
+            <args>
+            </args>
+        </payloadFactory>
+
+        <script language="js">
+            <![CDATA[
+            var name=mc.getProperty('uri.var.name');
+            var description=mc.getProperty('uri.var.description');
+            var parentId=mc.getProperty('uri.var.parentId');
+            var sharedLink=mc.getProperty('uri.var.sharedLink');
+            var tags=mc.getProperty('uri.var.tags');
+
+            payload = mc.getPayloadJSON();
+
+            if(name != null && name != ""){
+                payload.name = name;
+            }
+
+            if(description !=null && description != ""){
+                payload.description=description;
+            }
+
+            if(parentId !=null && parentId != ""){
+                payload.parent= eval("("+'{"id":"'+parentId+'"}'+")");
+            }
+
+            if(sharedLink != null && sharedLink != ""){
+                payload.shared_link = eval("("+ sharedLink +")");
+            }
+
+            if(tags !=null && tags != ""){
+                payload.tags = eval("("+ tags +")");
+            }
+
+            mc.setPayloadJSON(payload);
+            ]]>
+        </script>
+        <call>
+            <endpoint>
+                <http method="put"
+                      uri-template="{uri.var.apiUrl}/2.0/files/{+uri.var.fileId}{+uri.var.fields}"/>
+            </endpoint>
+        </call>
+        <!-- Remove response custom header information -->
+        <header name="WWW-Authenticate" scope="transport" action="remove"/>
+    </sequence>
+</template>

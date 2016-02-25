@@ -1,0 +1,8 @@
+{
+  "apiUrl": "%s(boxApiUrl)",
+  "accessToken": "%s(accessToken)",
+  "folderId": "%s(folderId)",
+  "sharedLink": {
+    "access": "collaborators"
+  }
+}
