@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~  Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+~
+~  WSO2 Inc. licenses this file to you under the Apache License,
+~  Version 2.0 (the "License"); you may not use this file except
+~  in compliance with the License.
+~  You may obtain a copy of the License at
+~
+~   http://www.apache.org/licenses/LICENSE-2.0
+~
+~  Unless required by applicable law or agreed to in writing,
+~  software distributed under the License is distributed on an
+~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~  KIND, either express or implied.  See the License for the
+~  specific language governing permissions and limitations
+~  under the License.
+-->
+<template name="copyFolder" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="folderId" description="The id of the folder"/>
+    <parameter name="parentId" description="The ID of the destination folder"/>
+    <parameter name="name" description="An optional new name for the folder"/>
+    <sequence>
+        <property name="uri.var.folderId" expression="$func:folderId"/>
+        <property name="uri.var.parentId" expression="$func:parentId"/>
+        <property name="uri.var.name" expression="$func:name"/>
+        <payloadFactory media-type="json">
+            <format>
+                {
+                "parent":{"id":"$1"}
+                }
+            </format>
+            <args>
+                <arg expression="get-property('uri.var.parentId')"/>
+            </args>
+        </payloadFactory>
+        <script language="js">
+            <![CDATA[
+            var name=mc.getProperty('uri.var.name');
+            payload = mc.getPayloadJSON();
+            if(name != null && name != ""){
+            payload.name = name;
+            }
+            mc.setPayloadJSON(payload);
+            ]]>
+        </script>
+        <call>
+            <endpoint>
+                <http method="post"
+                      uri-template="{uri.var.apiUrl}/2.0/folders/{+uri.var.folderId}/copy{+uri.var.fields}"/>
+            </endpoint>
+        </call>
+        <!-- Remove response custom header information -->
+        <header name="WWW-Authenticate" scope="transport" action="remove"/>
+    </sequence>
+</template>
