@@ -10,11 +10,11 @@ Tested Platform:
 
  - Microsoft WINDOWS V-7
  - UBUNTU 14.04
- - WSO2 ESB 4.9.0
+ - WSO2 ESB 4.9.0, 5.0.0-BETA
 
 STEPS:
 
- 1. Download ESB 4.9.0 in the official site.
+ 1. Download WSO2 ESB  5.0.0-BETA and add "-XX:-UseSplitVerifier" under $JVM_MEM_OPTS into {ESB_HOME}/bin/wso2server.sh".
 
  2. Create a Box account and obtain a accesstoken
 	Note: A user can create up to four types of Box accounts as Personal,Starter,Business and Enterprise. The below steps can be followed to create a Personal account which can be created free of charge.
