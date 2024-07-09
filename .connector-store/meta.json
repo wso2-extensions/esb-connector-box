@@ -4,7 +4,7 @@
     "category": "Storage and Content Management",
     "documentationUrl": "https://docs.wso2.com/display/ESBCONNECTORS/Box+Connector",
     "description": "The Box connector allows you to access the Box Content API through the WSO2 ESB. The Box Content API gives you access to the content management and collaboration features you see in the Box web application and lets you extend them for use in your app.",
-    "status": "Unsupported",
+    "status": "Active",
     "labels": [
         "connector"
     ],
